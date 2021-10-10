@@ -1,41 +1,31 @@
-import requests
-import json
-import re
+import HHdatabase
+import HHparser
 
-url = 'https://api.hh.ru/vacancies/'
+db = 'hh.db'
 keyword = 'Python программист'
-per_page = 100
 
-def tags_cleaner(text):
-    if text is None:
-        return "-"
-    cleaner = re.compile(pattern='<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6})')
-    text = cleaner.sub("", text)
-    return text
+main_fields = ['id', 'name', 'published_at', 'archived']
+opt_fields = ['area', 'type', 'employer', 'schedule']
+add_fields = ['address']
+sal_fields = ['salary']
+opt_subfields = ['id', 'name']
+add_subfields = ['id', 'raw']
+sal_subfields = ['from', 'to', 'currency', 'gross']
 
-def get_meta(page = 0):
-    req = requests.get(url = url, params = {'text': keyword, 'per_page': per_page, 'page': page})
-    found = req.json()['found']
-    pages = req.json()['pages']
-    req.close()
-    return found, pages
+found, pages = HHparser.get_meta(keyword)
+print('found:', found, 'pages:', pages)
 
-def get_data(page = 0):
-    req = requests.get(url = url, params = {'text': keyword, 'per_page': per_page, 'page': page})
-    data = req.json()['items']
-    req.close()
-    return data
-
-def get_description(id):
-    req = requests.get(url="https://api.hh.ru/vacancies/" + str(id))
-    description = tags_cleaner(req.json()['description'])
-    req.close()
-    return description
-
-found, pages = get_meta()
+HHdatabase.create_db(db)
 
 for page in range(pages):
-    data = get_data(page)
+    data = HHparser.get_data(page, keyword)
     items = len(data)
     for item in range(items):
-        #data[item]['...']
+        vacancy = {}
+        HHparser.get_fields(vacancy, main_fields, data[item])
+        HHparser.get_fields_with_subs(vacancy, opt_fields, opt_subfields, data[item])
+        HHparser.get_fields_with_subs(vacancy, add_fields, add_subfields, data[item])
+        HHparser.get_fields_with_subs(vacancy, sal_fields, sal_subfields, data[item])
+        vacancy['description'] = HHparser.get_description(data[item]['id'])
+        HHdatabase.add_vacancy(db, vacancy)
+        print('vacancy id:', vacancy['id'])
