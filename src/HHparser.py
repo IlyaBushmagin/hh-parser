@@ -23,15 +23,15 @@ def get_meta(keyword):
         print('Request error')
     return found, pages
 
-def get_data(page, keyword):
-    data = {}
+def get_items(page, keyword):
+    items = {}
     try:
         req = requests.get(url = url, params = {'text': keyword, 'per_page': 100, 'page': page})
-        data = req.json()['items']
+        items = req.json()['items']
         req.close()
     except:
         print('Request error')
-    return data
+    return items
 
 def get_description(id):
     description = None
@@ -43,7 +43,7 @@ def get_description(id):
         print('Request error')
     return description
 
-def get_fields(vacancy, fields, item):
+def set_fields(vacancy, fields, item):
     for field in fields:
         try:
             if item[field] is None:
@@ -53,7 +53,7 @@ def get_fields(vacancy, fields, item):
         except:
             vacancy[field] = None
 
-def get_subfields(vacancy, fields, subfields, item):
+def set_subfields(vacancy, fields, subfields, item):
     for field in fields:
         vacancy[field] = {}
         for subfield in subfields:
