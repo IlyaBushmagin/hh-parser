@@ -19,13 +19,12 @@ HHdatabase.create_db(db)
 
 for page in range(pages):
     data = HHparser.get_data(page, keyword)
-    items = len(data)
-    for item in range(items):
+    for item in data:
         vacancy = {}
-        HHparser.get_fields(vacancy, main_fields, data[item])
-        HHparser.get_fields_with_subs(vacancy, opt_fields, opt_subfields, data[item])
-        HHparser.get_fields_with_subs(vacancy, add_fields, add_subfields, data[item])
-        HHparser.get_fields_with_subs(vacancy, sal_fields, sal_subfields, data[item])
-        vacancy['description'] = HHparser.get_description(data[item]['id'])
+        HHparser.get_fields(vacancy, main_fields, item)
+        HHparser.get_subfields(vacancy, opt_fields, opt_subfields, item)
+        HHparser.get_subfields(vacancy, add_fields, add_subfields, item)
+        HHparser.get_subfields(vacancy, sal_fields, sal_subfields, item)
+        vacancy['description'] = HHparser.get_description(item['id'])
         HHdatabase.add_vacancy(db, vacancy)
         print('vacancy id:', vacancy['id'])

@@ -43,24 +43,24 @@ def get_description(id):
         print('Request error')
     return description
 
-def get_fields(vacancy, fields, data):
+def get_fields(vacancy, fields, item):
     for field in fields:
         try:
-            if data[field] is None:
-                vacancy[field] = data[field]
+            if item[field] is None:
+                vacancy[field] = item[field]
             else:
-                vacancy[field] = str(data[field])
+                vacancy[field] = str(item[field])
         except:
             vacancy[field] = None
 
-def get_fields_with_subs(vacancy, fields, subfields, data):
+def get_subfields(vacancy, fields, subfields, item):
     for field in fields:
         vacancy[field] = {}
         for subfield in subfields:
             try:
-                if data[field][subfield] is None:
-                    vacancy[field][subfield] = data[field][subfield]
+                if item[field][subfield] is None:
+                    vacancy[field][subfield] = item[field][subfield]
                 else:
-                    vacancy[field][subfield] = str(data[field][subfield])
+                    vacancy[field][subfield] = str(item[field][subfield])
             except:
                 vacancy[field][subfield] = None
