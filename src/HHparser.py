@@ -24,43 +24,47 @@ def get_meta(keyword):
     return found, pages
 
 def get_items(page, keyword):
-    items = {}
+    data = {}
     try:
         req = requests.get(url = url, params = {'text': keyword, 'per_page': 100, 'page': page})
-        items = req.json()['items']
+        data = req.json()['items']
         req.close()
     except:
         print('Request error')
-    return items
+    return data
 
 def get_description(id):
-    description = None
+    data = {'description': None}
     try:
         req = requests.get(url = url + str(id))
-        description = tags_cleaner(req.json()['description'])
+        data['description'] = tags_cleaner(req.json()['description'])
         req.close()
     except:
         print('Request error')
-    return description
+    return data
 
-def set_fields(vacancy, fields, item):
+def get_fields(fields, item):
+    data = {}
     for field in fields:
         try:
             if item[field] is None:
-                vacancy[field] = item[field]
+                data[field] = item[field]
             else:
-                vacancy[field] = str(item[field])
+                data[field] = str(item[field])
         except:
-            vacancy[field] = None
+            data[field] = None
+    return data
 
-def set_subfields(vacancy, fields, subfields, item):
+def get_subfields(fields, subfields, item):
+    data = {}
     for field in fields:
-        vacancy[field] = {}
+        data[field] = {}
         for subfield in subfields:
             try:
                 if item[field][subfield] is None:
-                    vacancy[field][subfield] = item[field][subfield]
+                    data[field][subfield] = item[field][subfield]
                 else:
-                    vacancy[field][subfield] = str(item[field][subfield])
+                    data[field][subfield] = str(item[field][subfield])
             except:
-                vacancy[field][subfield] = None
+                data[field][subfield] = None
+    return data
